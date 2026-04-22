@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R.S. FAST - Deliveries & Collections</title>
+    <style>
+        :root {
+            --primary: #1A237E;
+            --accent: #FF6D00;
+            --bg: #F5F5F5;
+            --text: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Container do "Celular" */
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .content {
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #eee;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        h2 { font-size: 1.1rem; color: var(--primary); margin-top: 0; }
+
+        label { display: block; font-size: 0.8rem; color: #666; margin-bottom: 5px; }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .btn-main {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-main:hover { opacity: 0.9; }
+
+        /* Status de Entrega */
+        #status-area {
+            display: none;
+            border-top: 2px dashed #ddd;
+            padding-top: 15px;
+        }
+
+        .tracking-dot {
+            height: 10px;
+            width: 10px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 10px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+        }
+
+        .footer-nav {
+            background: #f9f9f9;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        R.S. FAST DELIVERIES
+    </header>
+
+    <div class="content">
+        <div id="request-form">
+            <div class="card">
+                <h2><span style="color:var(--accent)">↑</span> Ponto de Coleta</h2>
+                <label>Endereço de Origem</label>
+                <input type="text" id="origem" placeholder="Ex: Rua das Flores, 10">
+            </div>
+
+            <div class="card">
+                <h2><span style="color:var(--primary)">↓</span> Ponto de Entrega</h2>
+                <label>Endereço de Destino</label>
+                <input type="text" id="destino" placeholder="Ex: Av. Central, 500">
+            </div>
+
+            <div class="card">
+                <h2>📦 Detalhes do Objeto</h2>
+                <input type="text" id="item" placeholder="O que vamos transportar?">
+            </div>
+
+            <button class="btn-main" onclick="solicitarEntrega()">SOLICITAR COLETA AGORA</button>
+        </div>
+
+        <div id="status-area">
+            <div class="card">
+                <h2>Status do Pedido</h2>
+                <p><span class="tracking-dot"></span> <span id="status-text">Buscando entregador próximo...</span></p>
+                <hr>
+                <p style="font-size: 0.9rem;"><strong>Item:</strong> <span id="resumo-item"></span></p>
+                <p style="font-size: 0.9rem;"><strong>Valor Estimado:</strong> R$ 25,00</p>
+            </div>
+            <button class="btn-main" style="background: #666;" onclick="cancelar()">CANCELAR</button>
+        </div>
+    </div>
+
+    <div class="footer-nav">
+        <span>🏠 Início</span>
+        <span>📦 Pedidos</span>
+        <span>👤 Perfil</span>
+    </div>
+</div>
+
+<script>
+    function solicitarEntrega() {
+        const origem = document.getElementById('origem').value;
+        const destino = document.getElementById('destino').value;
+        const item = document.getElementById('item').value;
+
+        if(!origem || !destino) {
+            alert("Por favor, preencha os endereços!");
+            return;
+        }
+
+        // Esconde formulário e mostra status
+        document.getElementById('request-form').style.display = 'none';
+        document.getElementById('status-area').style.display = 'block';
+        document.getElementById('resumo-item').innerText = item || "Pacote Geral";
+
+        // Simulação de fluxo logístico
+        setTimeout(() => {
+            document.getElementById('status-text').innerText = "Entregador (João) aceitou o chamado!";
+        }, 3000);
+
+        setTimeout(() => {
+            document.getElementById('status-text').innerText = "Coleta realizada! Em rota de entrega...";
+        }, 7000);
+    }
+
+    function cancelar() {
+        location.reload();
+    }
+</script>
+
+</body>
+</html>
